@@ -61,8 +61,8 @@ const App = React.forwardRef((props, ref) => {
   const classes = useStyles();
 
   const [address, setAddress] = useState('')
-  const [fromLat, setFromLat] = useState(60.168992)
-  const [fromLon, setFromLon] = useState(24.932366)
+  const [fromLat, setFromLat] = useState(0)
+  const [fromLon, setFromLon] = useState(0)
 
   function DelayedRoute() {
     const [getRoute, { loading, error, data }] = useLazyQuery(GET_ROUTE)
@@ -75,7 +75,8 @@ const App = React.forwardRef((props, ref) => {
         <button onClick={() => getRoute({ variables: { fromLat: fromLat, fromLon: fromLon } })}>
           Get start time
       </button>
-        {data ? <p>{data.plan.itineraries[0].legs[0].startTime}</p> : <p>results here</p>}
+      <br/>
+        {data && new Date(data.plan.itineraries[0].legs[0].startTime).toString()}
       </div>
     )
   }
