@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { ApolloClient, InMemoryCache, gql, ApolloProvider, useQuery, useLazyQuery } from '@apollo/client';
 
-const client = new ApolloClient({
+const routeClient = new ApolloClient({
   uri: 'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql',
   cache: new InMemoryCache()
 });
@@ -60,6 +60,7 @@ const App = React.forwardRef((props, ref) => {
 
   const classes = useStyles();
 
+  const [address, setAddress] = useState('')
   const [fromLat, setFromLat] = useState(60.168992)
   const [fromLon, setFromLon] = useState(24.932366)
 
@@ -79,8 +80,27 @@ const App = React.forwardRef((props, ref) => {
     )
   }
 
+  function handleAddress() {
+    fetch('http://api.digitransit.fi/geocoding/v1/search?text=' + address + '&size=1')
+      .then(res => res.json())
+      .then((data) => {
+        setFromLon(data.features[0].geometry.coordinates[0])
+        setFromLat(data.features[0].geometry.coordinates[1])
+        console.log("tässä data:", data)
+      })
+      .catch(console.log)
+  }
+
+  function Address() {
+    return (
+      <button onClick={() => handleAddress()}>
+        Get address coordinates
+      </button>
+    )
+  }
+
   return (
-    <ApolloProvider client={client}>
+    <ApolloProvider client={routeClient}>
       <ThemeProvider theme={customTheme}>
         <CssBaseline />
         <div className="App">
@@ -97,6 +117,19 @@ const App = React.forwardRef((props, ref) => {
                 <Typography variant="h6" className={classes.title}>
                   Select locations
                   <div>
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      type="string"
+                      id="form-name"
+                      label="Starting address"
+                      value={address}
+                      onChange={address => setAddress(address.target.value)}
+                      inputProps={{ maxLength: 100 }}
+                    />
+                    <br />
+                    <Address></Address>
+                    <br />
                     <TextField
                       autoFocus
                       margin="dense"
