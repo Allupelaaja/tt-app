@@ -102,11 +102,11 @@ const App = React.forwardRef((props, ref) => {
         </Button>
         <br />
         <List>
-          {data && data.plan.itineraries.map((index, entry) => (
+          {data && data.plan.itineraries.map((entry, index) => (
             <div key={index}>
               <p>Itinerary</p>
-              {entry.legs.map((innerIndex, innerEntry) => (
-                <div key={innerIndex}>
+              {entry.legs.map((innerEntry, index) => (
+                <div key={index}>
                   <ListItem>
                     <ListItemText
                       primary={innerEntry.mode}
