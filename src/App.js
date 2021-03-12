@@ -131,7 +131,7 @@ const App = React.forwardRef((props, ref) => {
 
   /** */
   async function handleAddress() {
-    const res = await fetch('http://api.digitransit.fi/geocoding/v1/search?text=' + address + '&size=1');
+    const res = await fetch('https://api.digitransit.fi/geocoding/v1/search?text=' + address + '&size=1');
     const data = await res.json();
     return data;
   }
