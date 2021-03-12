@@ -1,15 +1,20 @@
-import logo from './logo.svg';
-import React, { useState, useEffect } from 'react'
-import { createMuiTheme, responsiveFontSizes, makeStyles, ThemeProvider } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { AppBar, Toolbar, Container, TextField, Button, List, ListItem, ListItemText } from '@material-ui/core'
+import React, {useState} from 'react';
+import {
+  createMuiTheme, responsiveFontSizes, makeStyles, ThemeProvider,
+} from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import {
+  AppBar, Toolbar, Container, TextField, Button, List, ListItem, ListItemText,
+} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 
-import { ApolloClient, InMemoryCache, gql, ApolloProvider, useQuery, useLazyQuery } from '@apollo/client';
+import {
+  ApolloClient, InMemoryCache, gql, ApolloProvider, useLazyQuery,
+} from '@apollo/client';
 
 const routeClient = new ApolloClient({
   uri: 'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql',
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
 });
 
 const GET_ROUTE = gql`
@@ -38,8 +43,8 @@ const App = React.forwardRef((props, ref) => {
     palette: {
       type: 'dark',
     },
-  })
-  customTheme = responsiveFontSizes(customTheme)
+  });
+  customTheme = responsiveFontSizes(customTheme);
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -47,7 +52,7 @@ const App = React.forwardRef((props, ref) => {
     },
     title: {
       flexGrow: 1,
-      textAlign: "center",
+      textAlign: 'center',
     },
     mainContent: {
       [theme.breakpoints.up('sm')]: {
@@ -55,24 +60,28 @@ const App = React.forwardRef((props, ref) => {
         margin: '0 auto',
         padding: '30px',
       },
-      textAlign: "center",
-    }
+      textAlign: 'center',
+    },
   }));
 
   const classes = useStyles();
 
-  const [address, setAddress] = useState('')
+  const [address, setAddress] = useState('');
 
+  /**
+   * @return {div}
+   */
   function DelayedRoute() {
-    const [getRoute, { loading, error, data }] = useLazyQuery(GET_ROUTE)
+    const [getRoute, {loading, error, data}] = useLazyQuery(GET_ROUTE);
 
-    if (loading) return (<p>Loading...</p>)
-    if (error) return (<p>Error :(</p>)
+    if (loading) return (<p>Loading...</p>);
+    if (error) return (<p>Error :(</p>);
 
+    /** */
     async function handleClick() {
-      const result = await handleAddress()
-      const resData = result.features[0].geometry.coordinates
-      getRoute({ variables: { fromLat: resData[1], fromLon: resData[0] } })
+      const result = await handleAddress();
+      const resData = result.features[0].geometry.coordinates;
+      getRoute({variables: {fromLat: resData[1], fromLon: resData[0]}});
     }
 
     return (
@@ -84,26 +93,27 @@ const App = React.forwardRef((props, ref) => {
           id="form-name"
           label="Starting address"
           value={address}
-          onChange={address => setAddress(address.target.value)}
-          inputProps={{ maxLength: 100 }}
+          onChange={(address) => setAddress(address.target.value)}
+          inputProps={{maxLength: 100}}
         />
         <br />
         <Button onClick={() => handleClick()}>
           Get routes
-      </Button>
+        </Button>
         <br />
         <List>
-          {data && data.plan.itineraries.map((entry) => (
-            <div>
+          {data && data.plan.itineraries.map((index, entry) => (
+            <div key={index}>
               <p>Itinerary</p>
-              {entry.legs.map((innerEntry) => (
-                <div>
+              {entry.legs.map((innerIndex, innerEntry) => (
+                <div key={innerIndex}>
                   <ListItem>
                     <ListItemText
                       primary={innerEntry.mode}
                       secondary={
                         <React.Fragment>
-                          Leg start time: {new Date(innerEntry.startTime).toString()}
+                          Leg start time:
+                          {new Date(innerEntry.startTime).toString()}
                           <br />
                       Leg end time: {new Date(innerEntry.endTime).toString()}
                         </React.Fragment>
@@ -116,13 +126,14 @@ const App = React.forwardRef((props, ref) => {
           ))}
         </List>
       </div>
-    )
+    );
   }
 
+  /** */
   async function handleAddress() {
-    const res = await fetch('http://api.digitransit.fi/geocoding/v1/search?text=' + address + '&size=1')
-    const data = await res.json()
-    return data
+    const res = await fetch('http://api.digitransit.fi/geocoding/v1/search?text=' + address + '&size=1');
+    const data = await res.json();
+    return data;
   }
 
   return (
@@ -134,7 +145,7 @@ const App = React.forwardRef((props, ref) => {
             <Toolbar>
               <Typography variant="h4" className={classes.title}>
                 Timetables App
-          </Typography>
+              </Typography>
             </Toolbar>
           </AppBar>
           <main>
@@ -148,6 +159,6 @@ const App = React.forwardRef((props, ref) => {
       </ThemeProvider>
     </ApolloProvider>
   );
-})
+});
 
 export default App;
