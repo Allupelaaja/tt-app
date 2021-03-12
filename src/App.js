@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import React, { useState, useEffect } from 'react'
 import { createMuiTheme, responsiveFontSizes, makeStyles, ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { AppBar, Toolbar, Container, TextField } from '@material-ui/core'
+import { AppBar, Toolbar, Container, TextField, Button, List, ListItem, ListItemText } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography';
 
 import { ApolloClient, InMemoryCache, gql, ApolloProvider, useQuery, useLazyQuery } from '@apollo/client';
@@ -55,14 +55,13 @@ const App = React.forwardRef((props, ref) => {
         margin: '0 auto',
         padding: '30px',
       },
+      textAlign: "center",
     }
   }));
 
   const classes = useStyles();
 
   const [address, setAddress] = useState('')
-  const [fromLat, setFromLat] = useState(0)
-  const [fromLon, setFromLon] = useState(0)
 
   function DelayedRoute() {
     const [getRoute, { loading, error, data }] = useLazyQuery(GET_ROUTE)
@@ -70,34 +69,60 @@ const App = React.forwardRef((props, ref) => {
     if (loading) return (<p>Loading...</p>)
     if (error) return (<p>Error :(</p>)
 
+    async function handleClick() {
+      const result = await handleAddress()
+      const resData = result.features[0].geometry.coordinates
+      getRoute({ variables: { fromLat: resData[1], fromLon: resData[0] } })
+    }
+
     return (
       <div>
-        <button onClick={() => getRoute({ variables: { fromLat: fromLat, fromLon: fromLon } })}>
-          Get start time
-      </button>
-      <br/>
-        {data && new Date(data.plan.itineraries[0].legs[0].startTime).toString()}
+        <TextField
+          autoFocus
+          margin="dense"
+          type="string"
+          id="form-name"
+          label="Starting address"
+          value={address}
+          onChange={address => setAddress(address.target.value)}
+          inputProps={{ maxLength: 100 }}
+        />
+        <br />
+        <Button onClick={() => handleClick()}>
+          Get routes
+      </Button>
+        <br />
+        <List>
+          {data && data.plan.itineraries.map((entry) => (
+            <div>
+              <p>Itinerary</p>
+              {entry.legs.map((innerEntry) => (
+                <div>
+                  <ListItem>
+                    <ListItemText
+                      primary={innerEntry.mode}
+                      secondary={
+                        <React.Fragment>
+                          Leg start time: {new Date(innerEntry.startTime).toString()}
+                          <br />
+                      Leg end time: {new Date(innerEntry.endTime).toString()}
+                        </React.Fragment>
+                      }>
+                    </ListItemText>
+                  </ListItem>
+                </div>
+              ))}
+            </div>
+          ))}
+        </List>
       </div>
     )
   }
 
-  function handleAddress() {
-    fetch('http://api.digitransit.fi/geocoding/v1/search?text=' + address + '&size=1')
-      .then(res => res.json())
-      .then((data) => {
-        setFromLon(data.features[0].geometry.coordinates[0])
-        setFromLat(data.features[0].geometry.coordinates[1])
-        console.log("tässä data:", data)
-      })
-      .catch(console.log)
-  }
-
-  function Address() {
-    return (
-      <button onClick={() => handleAddress()}>
-        Get address coordinates
-      </button>
-    )
+  async function handleAddress() {
+    const res = await fetch('http://api.digitransit.fi/geocoding/v1/search?text=' + address + '&size=1')
+    const data = await res.json()
+    return data
   }
 
   return (
@@ -115,47 +140,7 @@ const App = React.forwardRef((props, ref) => {
           <main>
             <Container className={classes.mainContent}>
               <div>
-                <Typography variant="h6" className={classes.title}>
-                  Select locations
-                  <div>
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      type="string"
-                      id="form-name"
-                      label="Starting address"
-                      value={address}
-                      onChange={address => setAddress(address.target.value)}
-                      inputProps={{ maxLength: 100 }}
-                    />
-                    <br />
-                    <Address></Address>
-                    <br />
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      type="number"
-                      id="form-name"
-                      label="Latitude"
-                      value={fromLat}
-                      onChange={fromLat => setFromLat(fromLat.target.value)}
-                      inputProps={{ maxLength: 100 }}
-                    />
-                    <br />
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      type="number"
-                      id="form-name"
-                      label="Longitude"
-                      value={fromLon}
-                      onChange={fromLon => setFromLon(fromLon.target.value)}
-                      inputProps={{ maxLength: 100 }}
-                    />
-                    <br />
-                  </div>
-                  <DelayedRoute></DelayedRoute>
-                </Typography>
+                <DelayedRoute></DelayedRoute>
               </div>
             </Container>
           </main>
