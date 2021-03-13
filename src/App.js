@@ -25,7 +25,7 @@ const GET_ROUTE = gql`
     plan(
       from: {lat: $fromLat, lon: $fromLon}
       to: {lat: 60.16736926540844, lon: 24.921782530681504}
-      numItineraries: 3
+      numItineraries: 5
     ) {
       itineraries {
         startTime
@@ -100,12 +100,16 @@ const App = React.forwardRef((props, ref) => {
   const [address, setAddress] = useState('');
   const [open, setOpen] = useState(false);
   const [route, setRoute] = useState(null);
+  const [results, setResults] = useState('');
 
   /**
    * @return {div}
    */
   function DelayedRoute() {
-    const [getRoute, {loading, error, data}] = useLazyQuery(GET_ROUTE);
+    const [getRoute, {loading, error, data}] =
+    useLazyQuery(GET_ROUTE, {onCompleted: () => {
+      setResults(data);
+    }});
 
     if (loading) return (<p>Loading...</p>);
     if (error) return (<p>Error :(</p>);
@@ -140,15 +144,21 @@ const App = React.forwardRef((props, ref) => {
         />
         <br />
         <Button onClick={() => handleClick()}>
-          Get routes
+          Get timetable
         </Button>
         <br />
+        <Typography variant="h5" className={classes.title}>
+          {address !== '' ?
+                  address + ' - Maria 01' : <></>}
+        </Typography>
+        <br />
         <List>
-          {data && data.plan.itineraries.map((entry, index) => (
+          {results && results.plan.itineraries.map((entry, index) => (
             <div key={index}>
               <ListItem button onClick={((e) => handleOpen(e, entry))}>
                 <ListItemText
-                  primary={'Route ' + (index + 1)}
+                  primary={'Route ' + (index + 1) + ' ' +
+                  Math.ceil(entry.duration/60) + 'min'}
                   secondary={
                     <React.Fragment>
                       {formatTime(entry.startTime)}&nbsp;
@@ -197,18 +207,28 @@ const App = React.forwardRef((props, ref) => {
           <Typography>Route info</Typography>
         </DialogTitle>
         <DialogContent>
-
           {route ? route.legs.map((entry, index) => (
             <div key={index}>
               <ListItem>
                 <ListItemText
-                  primary={'Leg ' + (index + 1)}
+                  primary={
+                    entry.mode +
+                    (entry.trip ?
+                    ' ' + entry.trip.routeShortName :
+                    '')
+                  }
                   secondary={
                     <React.Fragment>
+                      {entry.from.stop && entry.to.stop ?
+                      entry.from.stop.name +
+                      ' - ' +
+                      entry.to.stop.name :
+                      entry.from.name +
+                      ' - ' +
+                      entry.to.name}
+                      <br/>
                       {formatTime(entry.startTime)}&nbsp;
                       -&nbsp;{formatTime(entry.endTime)}
-                      <br />
-                      {entry.mode}
                     </React.Fragment>
                   }>
                 </ListItemText>
