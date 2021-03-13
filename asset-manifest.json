@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/tt-app/static/js/main.b147ae29.chunk.js",
-    "main.js.map": "/tt-app/static/js/main.b147ae29.chunk.js.map",
+    "main.js": "/tt-app/static/js/main.ac8b25d5.chunk.js",
+    "main.js.map": "/tt-app/static/js/main.ac8b25d5.chunk.js.map",
     "runtime-main.js": "/tt-app/static/js/runtime-main.00963429.js",
     "runtime-main.js.map": "/tt-app/static/js/runtime-main.00963429.js.map",
-    "static/js/2.41087118.chunk.js": "/tt-app/static/js/2.41087118.chunk.js",
-    "static/js/2.41087118.chunk.js.map": "/tt-app/static/js/2.41087118.chunk.js.map",
+    "static/js/2.d2df93f3.chunk.js": "/tt-app/static/js/2.d2df93f3.chunk.js",
+    "static/js/2.d2df93f3.chunk.js.map": "/tt-app/static/js/2.d2df93f3.chunk.js.map",
     "static/js/3.164da65d.chunk.js": "/tt-app/static/js/3.164da65d.chunk.js",
     "static/js/3.164da65d.chunk.js.map": "/tt-app/static/js/3.164da65d.chunk.js.map",
     "index.html": "/tt-app/index.html",
-    "static/js/2.41087118.chunk.js.LICENSE.txt": "/tt-app/static/js/2.41087118.chunk.js.LICENSE.txt"
+    "static/js/2.d2df93f3.chunk.js.LICENSE.txt": "/tt-app/static/js/2.d2df93f3.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.00963429.js",
-    "static/js/2.41087118.chunk.js",
-    "static/js/main.b147ae29.chunk.js"
+    "static/js/2.d2df93f3.chunk.js",
+    "static/js/main.ac8b25d5.chunk.js"
   ]
 }
