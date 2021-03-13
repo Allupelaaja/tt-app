@@ -5,8 +5,11 @@ import {
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   AppBar, Toolbar, Container, TextField, Button, List, ListItem, ListItemText,
+  Dialog, DialogTitle, DialogContent,
 } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import Brightness3Icon from '@material-ui/icons/Brightness3';
+import WbSunnyIcon from '@material-ui/icons/WbSunny';
 
 import {
   ApolloClient, InMemoryCache, gql, ApolloProvider, useLazyQuery,
@@ -39,9 +42,11 @@ const GET_ROUTE = gql`
   }`;
 
 const App = React.forwardRef((props, ref) => {
+  const [brightness, setBrightness] = useState('light');
+
   let customTheme = createMuiTheme({
     palette: {
-      type: 'dark',
+      type: brightness,
     },
   });
   customTheme = responsiveFontSizes(customTheme);
@@ -67,6 +72,8 @@ const App = React.forwardRef((props, ref) => {
   const classes = useStyles();
 
   const [address, setAddress] = useState('');
+  const [open, setOpen] = useState(false);
+  const [route, setRoute] = useState(null);
 
   /**
    * @return {div}
@@ -82,6 +89,15 @@ const App = React.forwardRef((props, ref) => {
       const result = await handleAddress();
       const resData = result.features[0].geometry.coordinates;
       getRoute({variables: {fromLat: resData[1], fromLon: resData[0]}});
+    }
+
+    /**
+   *@param {Object} event
+   *@param {Object} entry
+  */
+    function handleOpen(event, entry) {
+      setRoute(entry);
+      setOpen(true);
     }
 
     return (
@@ -104,30 +120,59 @@ const App = React.forwardRef((props, ref) => {
         <List>
           {data && data.plan.itineraries.map((entry, index) => (
             <div key={index}>
-              <p>Itinerary</p>
-              {entry.legs.map((innerEntry, index) => (
-                <div key={index}>
-                  <ListItem>
-                    <ListItemText
-                      primary={innerEntry.mode}
-                      secondary={
-                        <React.Fragment>
-                          Leg start time:
-                          {new Date(innerEntry.startTime).toString()}
-                          <br />
-                      Leg end time: {new Date(innerEntry.endTime).toString()}
-                        </React.Fragment>
-                      }>
-                    </ListItemText>
-                  </ListItem>
-                </div>
-              ))}
+              <ListItem button onClick={((e) => handleOpen(e, entry))}>
+                <ListItemText
+                  primary={'Route ' + (index + 1)}>
+                </ListItemText>
+              </ListItem>
             </div>
           ))}
         </List>
       </div>
     );
   }
+
+  /**
+   * @return {div}
+   */
+  function MoreInfo() {
+    return (
+      <Dialog
+        onClose={handleClose}
+        aria-labelledby="simple-dialog-title"
+        open={open}
+      >
+        <DialogTitle
+          id="simple-dialog-title">
+          <Typography>Route info</Typography>
+        </DialogTitle>
+        <DialogContent>
+
+          {route ? route.legs.map((entry, index) => (
+            <div key={index}>
+              <ListItem>
+                <ListItemText
+                  primary={'Route ' + (index + 1)}
+                  secondary={
+                    <React.Fragment>
+                      Leg start time:
+                      {new Date(entry.startTime).toString()}
+                      <br />
+                      Leg end time: {new Date(entry.endTime).toString()}
+                    </React.Fragment>
+                  }>
+                </ListItemText>
+              </ListItem>
+            </div>
+          )) : <></>}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   /** */
   async function handleAddress() {
@@ -146,11 +191,21 @@ const App = React.forwardRef((props, ref) => {
               <Typography variant="h4" className={classes.title}>
                 Timetables App
               </Typography>
+              {brightness === 'light' ?
+                <Button
+                  onClick={() => setBrightness('dark')}>
+                  <Brightness3Icon />
+                </Button> :
+                <Button
+                  onClick={() => setBrightness('light')}>
+                  <WbSunnyIcon />
+                </Button>}
             </Toolbar>
           </AppBar>
           <main>
             <Container className={classes.mainContent}>
               <div>
+                <MoreInfo open={open} onClose={handleClose}></MoreInfo>
                 <DelayedRoute></DelayedRoute>
               </div>
             </Container>
