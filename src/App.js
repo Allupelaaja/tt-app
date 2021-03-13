@@ -28,6 +28,10 @@ const GET_ROUTE = gql`
       numItineraries: 3
     ) {
       itineraries {
+        startTime
+        endTime
+        duration
+        walkDistance
         legs {
           startTime
           endTime
@@ -36,6 +40,28 @@ const GET_ROUTE = gql`
           realTime
           distance
           transitLeg
+          from {
+            lat
+            lon
+            name
+            stop {
+              code
+              name
+            }
+          }
+          to {
+            lat
+            lon
+            name
+            stop {
+              code
+              name
+            }
+          }
+          trip {
+            tripHeadsign
+            routeShortName
+          }
         }
       }
     }
@@ -122,7 +148,13 @@ const App = React.forwardRef((props, ref) => {
             <div key={index}>
               <ListItem button onClick={((e) => handleOpen(e, entry))}>
                 <ListItemText
-                  primary={'Route ' + (index + 1)}>
+                  primary={'Route ' + (index + 1)}
+                  secondary={
+                    <React.Fragment>
+                      {formatTime(entry.startTime)}&nbsp;
+                      -&nbsp;{formatTime(entry.endTime)}
+                    </React.Fragment>
+                  }>
                 </ListItemText>
               </ListItem>
             </div>
@@ -130,6 +162,24 @@ const App = React.forwardRef((props, ref) => {
         </List>
       </div>
     );
+  }
+
+  /**
+   *@param {Number} time
+   * @return {String}
+  */
+  function formatTime(time) {
+    const date = new Date(time);
+    let hours = date.getHours();
+    if (hours < 10) {
+      hours = '0' + hours;
+    }
+    let minutes = date.getMinutes();
+    if (minutes < 10) {
+      minutes = '0' + minutes;
+    }
+    const timeAsString = hours + ':' + minutes;
+    return timeAsString;
   }
 
   /**
@@ -152,13 +202,13 @@ const App = React.forwardRef((props, ref) => {
             <div key={index}>
               <ListItem>
                 <ListItemText
-                  primary={'Route ' + (index + 1)}
+                  primary={'Leg ' + (index + 1)}
                   secondary={
                     <React.Fragment>
-                      Leg start time:
-                      {new Date(entry.startTime).toString()}
+                      {formatTime(entry.startTime)}&nbsp;
+                      -&nbsp;{formatTime(entry.endTime)}
                       <br />
-                      Leg end time: {new Date(entry.endTime).toString()}
+                      {entry.mode}
                     </React.Fragment>
                   }>
                 </ListItemText>
