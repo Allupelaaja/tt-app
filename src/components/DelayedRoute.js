@@ -1,64 +1,21 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import {
-  TextField, Button, List, ListItem, ListItemText,
+  List, ListItem, ListItemText,
 } from '@material-ui/core';
 import {connect} from 'react-redux';
-import {
-  gql, useLazyQuery,
-} from '@apollo/client';
 import {
   makeStyles,
 } from '@material-ui/core/styles';
 import formatTime from '../functions/formatTime';
 import PropTypes from 'prop-types';
+import {setBool} from '../actions/setBool';
+import {setOpen} from '../actions/setOpen';
+import store from '../store/routesStore';
 
-const GET_ROUTE = gql`
-  query Route($fromLat: Float!, $fromLon: Float!) {
-    plan(
-      from: {lat: $fromLat, lon: $fromLon}
-      to: {lat: 60.16736926540844, lon: 24.921782530681504}
-      numItineraries: 5
-    ) {
-      itineraries {
-        startTime
-        endTime
-        duration
-        walkDistance
-        legs {
-          startTime
-          endTime
-          mode
-          duration
-          realTime
-          distance
-          transitLeg
-          from {
-            lat
-            lon
-            name
-            stop {
-              code
-              name
-            }
-          }
-          to {
-            lat
-            lon
-            name
-            stop {
-              code
-              name
-            }
-          }
-          trip {
-            tripHeadsign
-            routeShortName
-          }
-        }
-      }
-    }
-  }`;
+window.store = store;
+window.setOpen = setOpen;
+window.setBool = setBool;
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -78,78 +35,38 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const mapStateToProps = (state) => {
-  return {routes: state.routes};
+  return {
+    content: state.content,
+    isOpen: state.isOpen,
+    routes: state.routes,
+    address: state.address,
+  };
 };
 
 /**
-* @param {setRoute} setRoute
-* @param {setOpen} setOpen
 * @return {div}
 */
-function DelayedRoute({routes, setRoute, setOpen}) {
-  const [address, setAddress] = useState('');
-  const [getRoute, {loading, error, data}] =
-      useLazyQuery(GET_ROUTE, {
-        onCompleted: () => {
-          store.dispatch(setData(data));
-        },
-      });
-
+function DelayedRoute({content, isOpen, routes, address}) {
   DelayedRoute.propTypes = {
-    setRoute: PropTypes.func,
-    setOpen: PropTypes.func,
+    content: PropTypes.object,
+    isOpen: PropTypes.bool,
     routes: PropTypes.object,
+    address: PropTypes.string,
   };
 
   const classes = useStyles();
-
-  if (loading) return (<p>Loading...</p>);
-  if (error) return (<p>Error :(</p>);
-
-  /** */
-  async function handleClick() {
-    const result = await handleAddress();
-    const resData = result.features[0].geometry.coordinates;
-    getRoute({variables: {fromLat: resData[1], fromLon: resData[0]}});
-  }
-
-  /** */
-  async function handleAddress() {
-    const res = await fetch('https://api.digitransit.fi/geocoding/v1/search?text=' + address + '&size=1');
-    const data = await res.json();
-    return data;
-  }
 
   /**
    *@param {Object} event
    *@param {Object} entry
   */
   function handleOpen(event, entry) {
-    setRoute(entry);
-    setOpen(true);
+    store.dispatch(setOpen(entry));
+    store.dispatch(setBool(true));
   }
 
   return (
     <div>
-      <div className={classes.buttonDiv}>
-        <TextField
-          autoFocus
-          margin="dense"
-          type="string"
-          id="form-name"
-          label="Starting address"
-          value={address}
-          onChange={(address) => setAddress(address.target.value)}
-          inputProps={{maxLength: 100}}
-        />
-        <Button
-          className={classes.customBtn}
-          variant='contained' onClick={() => handleClick()}>
-          <Typography variant="h5">
-          Get timetable
-          </Typography>
-        </Button>
-      </div>
       <Typography variant="h5" className={classes.title}>
         {address !== '' ?
             address + ' - Maria 01' : <></>}

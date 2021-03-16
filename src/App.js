@@ -4,8 +4,7 @@ import {
 } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
-  AppBar, Toolbar, Container, Button, ListItem, ListItemText,
-  Dialog, DialogTitle, DialogContent,
+  AppBar, Toolbar, Container, Button,
 } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Brightness3Icon from '@material-ui/icons/Brightness3';
@@ -16,10 +15,15 @@ import {
 import store from './store/routesStore';
 import {setData} from './actions/setData';
 import DelayedRoute from './components/DelayedRoute';
-import formatTime from './functions/formatTime';
+import MoreInfo from './components/MoreInfo';
+import AddressSearch from './components/AddressSearch';
+import {setBool} from './actions/setBool';
+import {setOpen} from './actions/setOpen';
 
 window.store = store;
 window.setData = setData;
+window.setOpen = setOpen;
+window.setBool = setBool;
 
 const routeClient = new ApolloClient({
   uri: 'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql',
@@ -58,81 +62,9 @@ const App = React.forwardRef((props, ref) => {
       backgroundColor: customTheme.palette.background.paper,
       minHeight: '80vh',
     },
-    entry: {
-      borderRadius: '25px',
-      margin: '10px',
-    },
-    customBtn: {
-      marginLeft: '5vh',
-    },
-    buttonDiv: {
-      marginBottom: '2vh',
-    },
   }));
 
   const classes = useStyles();
-
-  const [open, setOpen] = useState(false);
-  const [route, setRoute] = useState(null);
-
-  /**
-   * @return {div}
-   */
-  function MoreInfo() {
-    return (
-      <Dialog
-        onClose={handleClose}
-        aria-labelledby="simple-dialog-title"
-        open={open}
-      >
-        <DialogTitle
-          id="simple-dialog-title">
-          <Typography variant="h5">Route info</Typography>
-        </DialogTitle>
-        <DialogContent>
-          {route ? route.legs.map((entry, index) => (
-            <div key={index} className={classes.entry}>
-              <ListItem>
-                <ListItemText
-                  primary={
-                    <React.Fragment>
-                      <Typography variant="h5">
-                        {entry.mode +
-                          (entry.trip ?
-                            ' ' + entry.trip.routeShortName :
-                            '') + ' - ' +
-                            Math.ceil(entry.duration / 60) + 'min'}
-                      </Typography>
-                    </React.Fragment>
-                  }
-                  secondary={
-                    <React.Fragment>
-                      <Typography variant="h5">
-                        {entry.from.stop && entry.to.stop ?
-                          entry.from.stop.name +
-                          ' - ' +
-                          entry.to.stop.name :
-                          entry.from.name +
-                          ' - ' +
-                          entry.to.name}
-                        <br />
-                        {formatTime(entry.startTime)}&nbsp;
-                      -&nbsp;{formatTime(entry.endTime)}
-                      </Typography>
-                    </React.Fragment>
-                  }>
-                </ListItemText>
-              </ListItem>
-            </div>
-          )) : <></>}
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   return (
     <ApolloProvider client={routeClient}>
@@ -161,11 +93,9 @@ const App = React.forwardRef((props, ref) => {
           <main>
             <Container className={classes.mainContent}>
               <div>
-                <MoreInfo open={open} onClose={handleClose}></MoreInfo>
-                <DelayedRoute
-                  setRoute={setRoute}
-                  setOpen={setOpen}>
-                </DelayedRoute>
+                <AddressSearch></AddressSearch>
+                <MoreInfo></MoreInfo>
+                <DelayedRoute></DelayedRoute>
               </div>
             </Container>
           </main>
