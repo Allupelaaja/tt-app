@@ -33,7 +33,7 @@ const routeClient = new ApolloClient({
 const App = React.forwardRef((props, ref) => {
   const [brightness, setBrightness] = useState('light');
 
-  store.subscribe(() => console.log('state', store.getState()));
+  // store.subscribe(() => console.log('state', store.getState()));
 
   let customTheme = createMuiTheme({
     palette: {

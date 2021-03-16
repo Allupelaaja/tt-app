@@ -3,6 +3,8 @@ const initialState = {
   content: {},
   isOpen: false,
   address: '',
+  startingAddress: '',
+  isEmpty: false,
 };
 
 /**
@@ -27,6 +29,14 @@ function routeReducer(state = initialState, action) {
     case 'SET_ADDRESS':
       return Object.assign({}, state, {
         address: action.payload,
+      });
+    case 'SET_STARTING':
+      return Object.assign({}, state, {
+        startingAddress: action.payload,
+      });
+    case 'SET_EMPTY':
+      return Object.assign({}, state, {
+        isEmpty: action.payload,
       });
     default:
       return state;

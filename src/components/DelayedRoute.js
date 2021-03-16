@@ -40,18 +40,20 @@ const mapStateToProps = (state) => {
     isOpen: state.isOpen,
     routes: state.routes,
     address: state.address,
+    startingAddress: state.startingAddress,
   };
 };
 
 /**
 * @return {div}
 */
-function DelayedRoute({content, isOpen, routes, address}) {
+function DelayedRoute({content, isOpen, routes, address, startingAddress}) {
   DelayedRoute.propTypes = {
     content: PropTypes.object,
     isOpen: PropTypes.bool,
     routes: PropTypes.object,
     address: PropTypes.string,
+    startingAddress: PropTypes.string,
   };
 
   const classes = useStyles();
@@ -68,8 +70,8 @@ function DelayedRoute({content, isOpen, routes, address}) {
   return (
     <div>
       <Typography variant="h5" className={classes.title}>
-        {address !== '' ?
-            address + ' - Maria 01' : <></>}
+        {startingAddress !== '' ?
+            startingAddress + ' - Maria 01' : <></>}
       </Typography>
       <br />
       <List>

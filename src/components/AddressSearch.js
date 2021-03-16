@@ -12,14 +12,20 @@ import {
 } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {setAddress} from '../actions/setAddress';
+import {setStarting} from '../actions/setStarting';
+import {setEmpty} from '../actions/setEmpty';
 import store from '../store/routesStore';
 
 window.store = store;
 window.setAddress = setAddress;
+window.setStarting = setStarting;
+window.setEmpty = setEmpty;
 
 const mapStateToProps = (state) => {
   return {
     address: state.address,
+    startingAddress: state.startingAddress,
+    isEmpty: state.isEmpty,
   };
 };
 
@@ -82,9 +88,11 @@ const useStyles = makeStyles((theme) => ({
 /**
 * @return {div}
 */
-function AddressSearch({address}) {
+function AddressSearch({address, startingAddress, isEmpty}) {
   AddressSearch.propTypes = {
     address: PropTypes.string,
+    startingAddress: PropTypes.string,
+    isEmpty: PropTypes.bool,
   };
 
   const classes = useStyles();
@@ -99,9 +107,14 @@ function AddressSearch({address}) {
 
   /** */
   async function handleClick() {
-    const result = await handleAddress();
-    const resData = result.features[0].geometry.coordinates;
-    getRoute({variables: {fromLat: resData[1], fromLon: resData[0]}});
+    if (address) {
+      const result = await handleAddress();
+      const resData = result.features[0].geometry.coordinates;
+      getRoute({variables: {fromLat: resData[1], fromLon: resData[0]}});
+      store.dispatch(setStarting(address));
+    } else {
+      store.dispatch(setEmpty(true));
+    }
   }
 
   /** */
@@ -111,16 +124,25 @@ function AddressSearch({address}) {
     return data;
   }
 
+  /**
+   * @param {String} address
+  */
+  function addressChange(address) {
+    store.dispatch(setEmpty(false));
+    store.dispatch(setAddress(address));
+  }
+
   return (
     <div className={classes.buttonDiv}>
       <TextField
+        error={isEmpty}
         autoFocus
         margin="dense"
         type="string"
         id="form-name"
         label="Starting address"
         value={address}
-        onChange={(address) => store.dispatch(setAddress(address.target.value))}
+        onChange={(address) => addressChange(address.target.value)}
         inputProps={{maxLength: 100}}
       />
       <Button
