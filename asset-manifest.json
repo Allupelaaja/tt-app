@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/tt-app/static/js/main.ac8b25d5.chunk.js",
-    "main.js.map": "/tt-app/static/js/main.ac8b25d5.chunk.js.map",
-    "runtime-main.js": "/tt-app/static/js/runtime-main.00963429.js",
-    "runtime-main.js.map": "/tt-app/static/js/runtime-main.00963429.js.map",
-    "static/js/2.d2df93f3.chunk.js": "/tt-app/static/js/2.d2df93f3.chunk.js",
-    "static/js/2.d2df93f3.chunk.js.map": "/tt-app/static/js/2.d2df93f3.chunk.js.map",
-    "static/js/3.164da65d.chunk.js": "/tt-app/static/js/3.164da65d.chunk.js",
-    "static/js/3.164da65d.chunk.js.map": "/tt-app/static/js/3.164da65d.chunk.js.map",
+    "main.js": "/tt-app/static/js/main.8bf5b278.chunk.js",
+    "main.js.map": "/tt-app/static/js/main.8bf5b278.chunk.js.map",
+    "runtime-main.js": "/tt-app/static/js/runtime-main.05cf0eac.js",
+    "runtime-main.js.map": "/tt-app/static/js/runtime-main.05cf0eac.js.map",
+    "static/js/2.5e666b34.chunk.js": "/tt-app/static/js/2.5e666b34.chunk.js",
+    "static/js/2.5e666b34.chunk.js.map": "/tt-app/static/js/2.5e666b34.chunk.js.map",
+    "static/js/3.48a00efa.chunk.js": "/tt-app/static/js/3.48a00efa.chunk.js",
+    "static/js/3.48a00efa.chunk.js.map": "/tt-app/static/js/3.48a00efa.chunk.js.map",
     "index.html": "/tt-app/index.html",
-    "static/js/2.d2df93f3.chunk.js.LICENSE.txt": "/tt-app/static/js/2.d2df93f3.chunk.js.LICENSE.txt"
+    "static/js/2.5e666b34.chunk.js.LICENSE.txt": "/tt-app/static/js/2.5e666b34.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.00963429.js",
-    "static/js/2.d2df93f3.chunk.js",
-    "static/js/main.ac8b25d5.chunk.js"
+    "static/js/runtime-main.05cf0eac.js",
+    "static/js/2.5e666b34.chunk.js",
+    "static/js/main.8bf5b278.chunk.js"
   ]
 }
